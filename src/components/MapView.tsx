@@ -136,12 +136,12 @@ export default function MapView() {
   }, [handleResize]);
 
   return (
-    <div className="flex-1 relative min-h-0">
+    <div className="flex-1 relative min-h-0 px-2">
       {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-warm-white z-10">
+        <div className="absolute inset-0 flex items-center justify-center bg-[#FAFAF9] z-10">
           <div className="text-center">
-            <div className="w-8 h-8 border-2 border-navy border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-            <p className="text-sm text-gray-500">地图加载中...</p>
+            <div className="w-8 h-8 border-2 border-[#1E3A5F] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+            <p className="text-[13px] text-[#9CA3AF]">地图加载中...</p>
           </div>
         </div>
       )}

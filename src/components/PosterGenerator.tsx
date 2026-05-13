@@ -3,8 +3,11 @@ import { useAppStore } from '../store';
 import { domToPng } from 'modern-screenshot';
 import { VISIT_TYPE_META } from '../types';
 
-export default function PosterGenerator() {
-  const [open, setOpen] = useState(false);
+interface Props {
+  inlineMode?: boolean;
+}
+
+export default function PosterGenerator(_props: Props) {
   const [generating, setGenerating] = useState(false);
   const [posterUrl, setPosterUrl] = useState<string | null>(null);
   const data = useAppStore((s) => s.data);
@@ -59,81 +62,95 @@ export default function PosterGenerator() {
     a.click();
   }
 
-  if (!open) {
-    return (
-      <button
-        onClick={() => setOpen(true)}
-        className="flex-1 py-2.5 bg-gradient-to-r from-amber-400 to-orange-400 text-white rounded-btn text-sm font-medium active:opacity-90"
-      >
-        📸 生成海报
-      </button>
-    );
-  }
-
   return (
-    <div className="fixed inset-0 bg-black/40 z-50 flex items-end" onClick={() => { setOpen(false); setPosterUrl(null); }}>
-      <div
-        className="bg-white w-full rounded-t-3xl max-h-[90vh] overflow-hidden flex flex-col"
-        onClick={e => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-          <h3 className="text-base font-semibold text-navy">生成分享海报</h3>
-          <button onClick={() => { setOpen(false); setPosterUrl(null); }} className="text-sm text-gray-400">关闭</button>
-        </div>
+    <div className="flex-1 overflow-y-auto px-4 py-4">
+      {/* Page title */}
+      <h2 className="text-[18px] font-bold text-[#1E3A5F] mb-4">生成分享海报</h2>
 
-        {/* Poster preview (hidden, used for rendering) */}
-        <div className="sr-only">
-          <div ref={posterRef} className="w-[375px] p-6" style={{ background: 'linear-gradient(135deg, #1E3A5F 0%, #2D5A87 100%)' }}>
-            <div className="text-center mb-8">
-              <p className="text-white/60 text-xs mb-2">人生履迹地图</p>
-              <h2 className="text-white text-2xl font-bold">{goldenSentence}</h2>
-            </div>
-            <div className="grid grid-cols-3 gap-4 mb-8">
-              <div className="bg-white/10 rounded-xl p-3 text-center">
-                <p className="text-white text-xl font-bold">{stats.provinces}</p>
-                <p className="text-white/60 text-xs">省份</p>
-              </div>
-              <div className="bg-white/10 rounded-xl p-3 text-center">
-                <p className="text-white text-xl font-bold">{stats.cities}</p>
-                <p className="text-white/60 text-xs">城市</p>
-              </div>
-              <div className="bg-white/10 rounded-xl p-3 text-center">
-                <p className="text-white text-xl font-bold">{stats.visits}</p>
-                <p className="text-white/60 text-xs">足迹</p>
-              </div>
-            </div>
-            {/* Type legend */}
-            <div className="flex flex-wrap gap-2 justify-center mb-6">
-              {data.cities.flatMap(c => c.visits.map(v => v.type)).filter((v, i, a) => a.indexOf(v) === i).map(type => (
-                <span key={type} className="bg-white/10 text-white text-xs px-2 py-1 rounded-full">
-                  {VISIT_TYPE_META[type]?.emoji} {VISIT_TYPE_META[type]?.label}
-                </span>
-              ))}
-            </div>
-            <p className="text-white/30 text-center text-xs">生成于 {new Date().toLocaleDateString('zh-CN')}</p>
+      {/* Poster template (used for rendering, positioned off-screen) */}
+      <div className="fixed -left-[9999px] top-0">
+        <div ref={posterRef} style={{ width: '375px', padding: '32px 24px', background: 'linear-gradient(135deg, #1E3A5F 0%, #2D5A87 100%)' }}>
+          <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px', marginBottom: '8px' }}>人生履迹地图</p>
+            <h2 style={{ color: '#fff', fontSize: '22px', fontWeight: 'bold', lineHeight: '1.4' }}>{goldenSentence}</h2>
           </div>
-        </div>
-
-        {/* Result area */}
-        <div className="flex-1 overflow-y-auto p-4">
-          {posterUrl ? (
-            <div className="space-y-3">
-              <img src={posterUrl} alt="海报" className="w-full rounded-2xl shadow-lg" />
-              <button onClick={handleSave} className="w-full py-3 bg-navy text-white rounded-xl text-sm font-medium">
-                💾 保存海报
-              </button>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '32px' }}>
+            <div style={{ background: 'rgba(255,255,255,0.1)', borderRadius: '12px', padding: '12px', textAlign: 'center' }}>
+              <p style={{ color: '#fff', fontSize: '24px', fontWeight: 'bold' }}>{stats.provinces}</p>
+              <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px' }}>省份</p>
             </div>
-          ) : (
-            <button
-              onClick={handleGenerate}
-              disabled={generating}
-              className="w-full py-3 bg-navy text-white rounded-xl text-sm font-medium disabled:opacity-50"
-            >
-              {generating ? '生成中...' : '✨ 点击生成'}
-            </button>
-          )}
+            <div style={{ background: 'rgba(255,255,255,0.1)', borderRadius: '12px', padding: '12px', textAlign: 'center' }}>
+              <p style={{ color: '#fff', fontSize: '24px', fontWeight: 'bold' }}>{stats.cities}</p>
+              <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px' }}>城市</p>
+            </div>
+            <div style={{ background: 'rgba(255,255,255,0.1)', borderRadius: '12px', padding: '12px', textAlign: 'center' }}>
+              <p style={{ color: '#fff', fontSize: '24px', fontWeight: 'bold' }}>{stats.visits}</p>
+              <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px' }}>足迹</p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: 'center', marginBottom: '24px' }}>
+            {data.cities.flatMap(c => c.visits.map(v => v.type)).filter((v, i, a) => a.indexOf(v) === i).map(type => (
+              <span key={type} style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', fontSize: '12px', padding: '4px 10px', borderRadius: '99px' }}>
+                {VISIT_TYPE_META[type]?.emoji} {VISIT_TYPE_META[type]?.label}
+              </span>
+            ))}
+          </div>
+          <p style={{ color: 'rgba(255,255,255,0.3)', textAlign: 'center', fontSize: '11px' }}>生成于 {new Date().toLocaleDateString('zh-CN')}</p>
         </div>
       </div>
+
+      {/* Preview card */}
+      <div className="bg-white rounded-[12px] shadow-sm border border-[#E5E7EB] overflow-hidden mb-4">
+        {posterUrl ? (
+          <img src={posterUrl} alt="海报预览" className="w-full" />
+        ) : (
+          /* Preview placeholder */
+          <div className="p-6 text-center" style={{ background: 'linear-gradient(135deg, #1E3A5F 0%, #2D5A87 100%)' }}>
+            <p className="text-white/60 text-[12px] mb-2">人生履迹地图</p>
+            <p className="text-white text-[18px] font-bold mb-6">{goldenSentence}</p>
+            <div className="grid grid-cols-3 gap-3 mb-4">
+              <div className="bg-white/10 rounded-[10px] py-3">
+                <p className="text-white text-[22px] font-bold">{stats.provinces}</p>
+                <p className="text-white/60 text-[11px]">省份</p>
+              </div>
+              <div className="bg-white/10 rounded-[10px] py-3">
+                <p className="text-white text-[22px] font-bold">{stats.cities}</p>
+                <p className="text-white/60 text-[11px]">城市</p>
+              </div>
+              <div className="bg-white/10 rounded-[10px] py-3">
+                <p className="text-white text-[22px] font-bold">{stats.visits}</p>
+                <p className="text-white/60 text-[11px]">足迹</p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Action buttons */}
+      {posterUrl ? (
+        <div className="space-y-3">
+          <button
+            onClick={handleSave}
+            className="w-full py-3.5 bg-[#1E3A5F] text-white rounded-[12px] text-[15px] font-medium shadow-lg shadow-[#1E3A5F]/20 hover:shadow-xl hover:-translate-y-0.5 transition-all"
+          >
+            💾 保存到相册
+          </button>
+          <button
+            onClick={() => setPosterUrl(null)}
+            className="w-full py-3.5 bg-white text-[#6B7280] border border-[#E5E7EB] rounded-[12px] text-[14px] hover:bg-[#F9FAFB] transition-colors"
+          >
+            重新生成
+          </button>
+        </div>
+      ) : (
+        <button
+          onClick={handleGenerate}
+          disabled={generating}
+          className="w-full py-3.5 bg-gradient-to-r from-[#F59E0B] to-[#F97316] text-white rounded-[12px] text-[15px] font-medium shadow-lg shadow-orange-200 hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0 transition-all"
+        >
+          {generating ? '✨ 生成中...' : '✨ 生成海报'}
+        </button>
+      )}
     </div>
   );
 }
