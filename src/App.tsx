@@ -16,43 +16,31 @@ function WelcomeModal() {
   const data = useAppStore((s) => s.data);
 
   useEffect(() => {
-    if (data.cities.length === 0) {
-      setVisible(true);
-    }
+    if (data.cities.length === 0) setVisible(true);
   }, [data.cities]);
 
   if (!visible) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-6" onClick={() => setVisible(false)}>
-      <div
-        className="bg-white rounded-[16px] p-8 w-full max-w-[320px] text-center shadow-xl"
-        onClick={e => e.stopPropagation()}
-      >
-        {/* Icon */}
-        <div className="w-16 h-16 mx-auto mb-5 bg-[#EEF2FF] rounded-full flex items-center justify-center">
-          <span className="text-3xl">🗺️</span>
+    <div className="fixed inset-0 bg-black/30 backdrop-blur-[2px] z-50 flex items-center justify-center p-6 fade-in" onClick={() => setVisible(false)}>
+      <div className="bg-white rounded-[20px] p-8 w-full max-w-[300px] text-center shadow-2xl scale-in" onClick={e => e.stopPropagation()}>
+        <div className="w-14 h-14 mx-auto mb-5 bg-[#F8F6F0] rounded-full flex items-center justify-center">
+          <span className="text-[28px]">🗺️</span>
         </div>
-
-        {/* Title */}
-        <h1 className="text-[28px] font-bold text-[#1E3A5F] mb-2 leading-tight">人生履迹</h1>
-        <h2 className="text-[16px] text-[#6B7280] mb-4">记录你走过的路</h2>
-
-        {/* Description */}
-        <p className="text-[14px] text-[#9CA3AF] leading-relaxed mb-8">
-          不是去过的城市列表，而是带着时间、标签和记忆的人生地图
+        <h1 className="text-[24px] font-bold text-[#1E3A5F] mb-1">人生履迹</h1>
+        <p className="text-[14px] text-[#6B7280] mb-6">记录你走过的路</p>
+        <p className="text-[13px] text-[#9CA3AF] leading-relaxed mb-8">
+          不只是去过的城市，<br/>更是带着时间、标签和记忆的人生地图
         </p>
-
-        {/* Buttons */}
         <button
           onClick={() => { setVisible(false); setEntryPanelOpen(true); }}
-          className="w-full py-3.5 bg-[#1E3A5F] text-white rounded-[12px] text-[15px] font-medium shadow-lg shadow-[#1E3A5F]/20 hover:shadow-xl hover:shadow-[#1E3A5F]/30 hover:-translate-y-0.5 active:translate-y-0 transition-all"
+          className="w-full py-3.5 bg-[#1E3A5F] text-white rounded-[12px] text-[15px] font-medium shadow-md shadow-[#1E3A5F]/20 active:scale-[0.98] transition-transform"
         >
           开始记录
         </button>
         <button
           onClick={() => setVisible(false)}
-          className="w-full py-3.5 mt-3 text-[14px] text-[#6B7280] bg-white border border-[#E5E7EB] rounded-[12px] hover:bg-[#F9FAFB] transition-colors"
+          className="w-full py-3 mt-3 text-[14px] text-[#9CA3AF] active:text-[#6B7280] transition-colors"
         >
           稍后再说
         </button>
@@ -84,22 +72,21 @@ export default function App() {
   return (
     <div className="flex flex-col h-[100dvh] bg-[#FAFAF9] overflow-hidden">
       {/* Header */}
-      <header className="px-4 pt-4 pb-2 bg-white/80 backdrop-blur-md border-b border-[#E5E7EB]/50">
+      <header className="px-4 pt-3 pb-2.5 bg-white/90 backdrop-blur-md border-b border-[#E8E6E1]/50">
         <div className="flex items-center justify-between">
-          <h1 className="text-[20px] font-bold text-[#1E3A5F] tracking-tight">人生履迹</h1>
-          <div className="flex items-center gap-3">
+          <div>
+            <h1 className="text-[18px] font-bold text-[#1E3A5F] tracking-tight leading-tight">人生履迹</h1>
             {totalCities > 0 && (
-              <span className="text-[12px] text-[#6B7280] bg-[#F3F4F6] px-2.5 py-1 rounded-full">
-                {provinces} 省 · {totalCities} 城
-              </span>
+              <span className="text-[11px] text-[#9CA3AF]">{provinces} 省 · {totalCities} 城</span>
             )}
-            <button
-              onClick={() => setEntryPanelOpen(true)}
-              className="w-8 h-8 flex items-center justify-center bg-[#1E3A5F] text-white rounded-full text-[16px] font-light shadow-md shadow-[#1E3A5F]/20 hover:shadow-lg hover:-translate-y-0.5 transition-all"
-            >
-              +
-            </button>
           </div>
+          <button
+            onClick={() => setEntryPanelOpen(true)}
+            className="w-9 h-9 flex items-center justify-center bg-[#1E3A5F] text-white rounded-full text-[20px] font-light shadow-md shadow-[#1E3A5F]/15 active:scale-[0.92] transition-transform"
+            aria-label="添加城市"
+          >
+            +
+          </button>
         </div>
       </header>
 
@@ -110,13 +97,16 @@ export default function App() {
             <MapView />
             {/* Legend pills below map */}
             {totalCities > 0 && (
-              <div className="px-4 py-2 flex flex-wrap gap-2 justify-center bg-white/60 border-t border-[#E5E7EB]/30">
+              <div className="px-3 py-1.5 flex flex-wrap gap-1.5 justify-center bg-white/80 border-t border-[#E8E6E1]/30">
                 {Object.entries(VISIT_TYPE_META).map(([type, meta]) => (
                   <span
                     key={type}
-                    className="inline-flex items-center gap-1.5 text-[12px] text-[#374151] bg-white px-2.5 py-1 rounded-full border border-[#E5E7EB] shadow-sm"
+                    className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full"
+                    style={{
+                      backgroundColor: meta.color + '12',
+                      color: meta.color,
+                    }}
                   >
-                    <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: meta.color }} />
                     <span>{meta.emoji}</span>
                     <span>{meta.label}</span>
                   </span>
